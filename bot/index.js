@@ -42,4 +42,4 @@ class BestDiscordBot {
     }
 }
 
-module.exports = new BestDiscordBot();
+export default new BestDiscordBot();
