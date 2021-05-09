@@ -1,9 +1,11 @@
+import { Channel, ChannelManager, TextChannel } from "discord.js";
+
 /**
  * Class that handles sendig messages to discord channel
  */
 class BestDiscordBot {
 
-    clientChannels = [];
+    clientChannels: ChannelManager | null = null;
     client = null;
 
     /**
@@ -16,7 +18,7 @@ class BestDiscordBot {
      * Sets channels
      * @param {Discord.ChannelManager} channels 
      */
-    setChannels(channels) {
+    setChannels(channels: ChannelManager) {
         this.clientChannels = channels;
     }
 
@@ -26,8 +28,14 @@ class BestDiscordBot {
      * @param {String} channelName 
      * @param {String} message 
      */
-    sendMessageToChannel(channelName, message) {
+    sendMessageToChannel(channelName: string, message: string) {
         const channel = this.getChannelByName(channelName);
+
+        if (!channel) {
+            console.error("Could not find channel");
+            return;
+        }
+
         channel.send(message);
     }
 
@@ -37,8 +45,12 @@ class BestDiscordBot {
      * @param {String} name 
      * @returns 
      */
-    getChannelByName(name) {
-        return this.clientChannels.cache.find(clientChannel => clientChannel.name === name);
+    getChannelByName(name: string) {
+        if (!this.clientChannels) {
+            return "";
+        }
+
+        return this.clientChannels.cache.find((clientChannel: any)=> clientChannel.name === name) as TextChannel;
     }
 }
 

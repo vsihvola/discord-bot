@@ -8,18 +8,18 @@ import {NgrokAdapter} from 'twitch-webhooks-ngrok';
  */
  class TwitchWebHookHandler {
 
-    clientId = null;
-    clientSecret = null;
-    listener = null;
-    subscription  = null;
-    hostName = null;
-    port = null;
-    userId = null;
+    clientId: string = "";
+    clientSecret: string = "";
+    listener: WebHookListener | null = null;
+    subscription: string = "";
+    hostName: string = "";
+    port: number = 3000;
+    userId: string = "";
 
     /**
      * Constructor
      */
-    constructor(clientId, clientSecret, userId, hostName, port) {
+    constructor(clientId: string, clientSecret: string, userId: string, hostName: string, port: number) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.hostName = hostName;
@@ -30,10 +30,9 @@ import {NgrokAdapter} from 'twitch-webhooks-ngrok';
     /**
      * Listen webhooks
      */
-    async listenWebhooks(streamOnlineCallback) {
+    async listenWebhooks(streamOnlineCallback: () => void) {
         const authProvider = new ClientCredentialsAuthProvider(this.clientId, this.clientSecret);
         const apiClient = new ApiClient({ authProvider });
-        
         this.listener = new WebHookListener(apiClient, new NgrokAdapter(), { hookValidity: 60 });
 
         await this.listener.listen();
@@ -43,8 +42,12 @@ import {NgrokAdapter} from 'twitch-webhooks-ngrok';
     /** 
      * Set subscription
      */
-    async setStreamSubscription(apiClient, streamOnlineCallback) {
+    async setStreamSubscription(apiClient: ApiClient, streamOnlineCallback: () => void) {
         let prevStream = await apiClient.helix.streams.getStreamByUserId(this.userId);
+
+        if (!this.listener) {
+            return;
+        }
 
         await this.listener.subscribeToStreamChanges(this.userId, async (stream) => {
             const streamInfo = await stream;
