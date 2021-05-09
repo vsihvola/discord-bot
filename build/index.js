@@ -63,6 +63,9 @@ var client = new Discord.Client();
 var config_js_1 = require("./config.js");
 var index_js_1 = __importDefault(require("./bot/index.js"));
 var index_js_2 = __importDefault(require("./twitch/index.js"));
+var express_1 = __importDefault(require("express"));
+var app = express_1.default();
+app.use(express_1.default.json());
 client.login(config_js_1.config.BOT_TOKEN);
 client.on("ready", function () { return __awaiter(void 0, void 0, void 0, function () {
     var bot, twitchWebHookHandler;
@@ -77,6 +80,25 @@ client.on("ready", function () { return __awaiter(void 0, void 0, void 0, functi
                     })];
             case 1:
                 _a.sent();
+                app.post('/wpPost', function (req, res) {
+                    return __awaiter(this, void 0, void 0, function () {
+                        var webhookData, url;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    webhookData = req.body;
+                                    console.log(webhookData);
+                                    url = webhookData.post.guid;
+                                    return [4 /*yield*/, bot.sendMessageToChannel(config_js_1.config.BOT_CHANNEL_NAME, 'Uutinen lisätty kotisivuille! ' + url)];
+                                case 1:
+                                    _a.sent();
+                                    res.status(200).send();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    });
+                });
+                app.listen(3000);
                 return [2 /*return*/];
         }
     });
